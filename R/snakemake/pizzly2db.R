@@ -9,7 +9,7 @@ library(DBI)
 #######################################################
 
 #Establish connection
-con <- DBI::dbConnect(odbc::odbc(), "GLASSv3")
+con <- DBI::dbConnect(odbc::odbc(), "VerhaakDB4")
 
 args = commandArgs(trailingOnly=TRUE)
 
@@ -27,6 +27,9 @@ tfus <- cbind(tfus,totalcount)
 tfus <- tfus[,c(1:7,9,8)]
 tfus <- tfus[order(tfus[,"totalcount"],decreasing=TRUE),]
 colnames(tfus) <- c("aliquot_barcode","gene_symbol_a","ensembl_gene_id_a","gene_symbol_b","ensembl_gene_id_b","paircount","splitcount","totalcount","ensembl_transcript_list")
+
+output <- "/projects/verhaak-lab/USERS/johnsk/glass4/results/kallisto/coding/analysis_pizzly_fusions.txt"
+write.table(tfus,output,sep="\t",quote=FALSE,row.names=FALSE)
 
 #dbWriteTable(con, Id(schema="analysis", table="pizzly_fusions"), tfus, overwrite=TRUE)
 

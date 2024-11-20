@@ -1,6 +1,7 @@
 #!/usr/bin/env Rscript
 
-install.packages(pkgs="/projects/varnf/SofWar/R/ssgsea.GBM.classification/",repos=NULL)
+# Received from Fred Varn.
+# install.packages(pkgs="/projects/verhaak-lab/USERS/johnsk/misc/SofWar/R/ssgsea.GBM.classification/",repos=NULL)
 
 #######################################################
 library(odbc)
@@ -29,7 +30,7 @@ runSsGSEAwithPermutation(gct_path,100)
 #Read in results from classifier and convert to long format
 
 #Open db connection
-con <- DBI::dbConnect(odbc::odbc(), "GLASSv3")
+con <- DBI::dbConnect(odbc::odbc(), "VerhaakDB4")
 
 res <- read.delim(class_out)
 aliquot_barcode <- rep(rownames(res),3)
@@ -67,6 +68,12 @@ for(i in 1:length(aliquots))
 simplicity_score <- data.frame(aliquots,simplicity_score)
 colnames(simplicity_score) <- c("aliquot_barcode","simplicity_score")
 
+subtype_output <- "/projects/verhaak-lab/USERS/johnsk/glass4/results/kallisto/coding/analysis_transcriptional_subtype.txt"
+simplicity_output <- "/projects/verhaak-lab/USERS/johnsk/glass4/results/kallisto/coding/analysis_simplicity_score.txt"
+
+write.table(transcriptional_subtype, subtype_output,sep="\t",quote=FALSE,row.names=FALSE)
+write.table(simplicity_score, simplicity_output,sep="\t",quote=FALSE,row.names=FALSE)
+
 #Upload to db
-dbWriteTable(con, Id(schema="analysis", table="transcriptional_subtype"), transcriptional_subtype, overwrite=TRUE, row.names=FALSE)
-dbWriteTable(con, Id(schema="analysis", table="simplicity_score"), simplicity_score, overwrite=TRUE, row.names=FALSE)
+#dbWriteTable(con, Id(schema="analysis", table="transcriptional_subtype"), transcriptional_subtype, overwrite=TRUE, row.names=FALSE)
+#dbWriteTable(con, Id(schema="analysis", table="simplicity_score"), simplicity_score, overwrite=TRUE, row.names=FALSE)

@@ -14,7 +14,7 @@ es <- t(es)
 
 
 #Establish connection
-con <- DBI::dbConnect(odbc::odbc(), "GLASSv3")
+con <- DBI::dbConnect(odbc::odbc(), "VerhaakDB4")
 
 q <- "
 SELECT * 
@@ -56,7 +56,7 @@ gene_set <- factor(gene_set, levels = rev(gene_set[order(resi_p)]))
 plot_res <- data.frame(gene_set, logp, eff, response)
 
 # Plot the relevant result here
-pdf("/projects/varnf/GLASS-III/GLASS-III/figures/analysis/hallmark_pathway_response_resistance.pdf", height=5, width=7)
+pdf("/fastscratch/johnsk/hallmark_pathway_response_resistance.pdf", height=5, width=7)
 ggplot(plot_res, aes(x = gene_set, y = logp, fill=eff)) +
 geom_bar(stat="identity") +
 geom_hline(yintercept=-log10(0.05),linetype="longdash") +

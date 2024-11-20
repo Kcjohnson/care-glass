@@ -1,0 +1,11 @@
+useDynLib(TitanCNA)
+import(BiocGenerics,IRanges,GenomicRanges,foreach,GenomeInfoDb,data.table,dplyr,VariantAnnotation)
+export(loadAlleleCounts,loadDefaultParameters,
+		filterData,getPositionOverlap,wigToRangedData,wigToGRanges,
+		outputTitanResults,outputModelParameters,correctReadDepth,
+		runEMclonalCN, viterbiClonalCN,computeSDbwIndex,
+		plotAllelicRatio,plotClonalFrequency,plotCNlogRByChr, plotIdiogram.hg38,
+		plotSubcloneProfiles, outputTitanSegments,
+		setGenomeStyle,plotSegmentMedians,
+		loadHaplotypeAlleleCounts,plotHaplotypeFraction, getHaplotypesFromVCF,
+		loadBXcountsFromBEDDir,correctIntegerCN)

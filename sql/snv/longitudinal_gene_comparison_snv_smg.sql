@@ -34,7 +34,7 @@ selected_genes AS
 (
 	SELECT DISTINCT sn.gene_symbol, ensembl_gene_id, variant_id, chrom, pos, alt, sn.variant_classification, variant_classification_priority, protein_change
 	FROM variants.anno sn
-	INNER JOIN ref.driver_genes ds ON ds.gene_symbol = sn.gene_symbol OR sn.gene_symbol IN ('NOTCH1','TCF12','BCOR','STAG2','PLCG1','ZBTB20','NUP210L','GABRA6','ABCD1','SLC6A3','SETD2','PTPN11','TRPA1','NRAS','ST3GAL6','KRAS','ARID2','RPL5','DNMT3A','COL6A3','TYRP1','LZTR1','EEF1A1','ZNF292','KRT15','FAM126B','TLR6','MAX','BRAF','NIPBL','TP63','RNF168','AOX1','DDX5','QKI','MUC17','F5','SMARCA4','EIF1AX','IL1RL1','ZDHHC4','ACAN','ARID1A','C10orf76','C10orf48','CLCN7','CLIP1','CREBZF','EDAR','EPHA3','FHOD1','GLT8D2','HMCN1','IL4R','KEL','KRT13','MYT1','PIK3C2G','PPM1J','RBBP6','SEMG1','TGFA','TPTE2') 
+	INNER JOIN ref.driver_genes ds ON ds.gene_symbol = sn.gene_symbol OR sn.gene_symbol IN ('MSH6','NOTCH1','TCF12','BCOR','STAG2','PLCG1','ZBTB20','NUP210L','GABRA6','ABCD1','SLC6A3','SETD2','PTPN11','TRPA1','NRAS','ST3GAL6','KRAS','ARID2','RPL5','DNMT3A','COL6A3','TYRP1','LZTR1','EEF1A1','ZNF292','KRT15','FAM126B','TLR6','MAX','BRAF','NIPBL','TP63','RNF168','AOX1','DDX5','QKI','MUC17','F5','SMARCA4','EIF1AX','IL1RL1','ZDHHC4','ACAN','ARID1A','C10orf76','C10orf48','CLCN7','CLIP1','CREBZF','EDAR','EPHA3','FHOD1','GLT8D2','HMCN1','IL4R','KEL','KRT13','MYT1','PIK3C2G','PPM1J','RBBP6','SEMG1','TGFA','TPTE2') 
 	INNER JOIN ref.ensembl_gene_mapping gm ON gm.gene_symbol = sn.gene_symbol
 	LEFT JOIN variants.variant_classifications vc ON sn.variant_classification = vc.variant_classification
 	WHERE

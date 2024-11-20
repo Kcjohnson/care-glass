@@ -1,0 +1,34 @@
+TitanCNA-dataset        TITAN EM trained results for an example dataset
+TitanCNA-package        TITAN: Subclonal copy number and LOH prediction
+                        whole genome sequencing of tumours
+computeSDbwIndex        Compute the S_Dbw Validity Index for 'TitanCNA'
+                        model selection
+correctIntegerCN        Compute purity and ploidy corrected log ratios;
+                        recompute integer CN for high-level
+                        amplifications.
+correctReadDepth        Correct GC content and mappability biases in
+                        sequencing data read counts
+filterData              Filter list object based on read depth and
+                        missing data and returns a filtered data.table
+                        object.
+getPositionOverlap      Function to assign values to given
+                        chromosome-position that overlaps a list of
+                        chromosomal segments
+loadAlleleCounts        Function to load tumour allele counts from a
+                        text file or data.frame and returns a
+                        data.table.
+loadDefaultParameters   Load TITAN parameters
+loadHaplotypeAlleleCounts
+                        Function to load tumour allele counts from a
+                        text file or data.frame and returns a
+                        data.table ('loadHaplotypeAlleleCounts').
+                        Function to load phased heterozygous sites from
+                        a VCF file ('getHaplotypesFromVCF')
+outputTitanResults      Formatting and printing 'TitanCNA' results.
+plotCNlogRByChr         Plotting functions for 'TitanCNA' results.
+runEMclonalCN           Function to run the Expectation Maximization
+                        Algorithm in 'TitanCNA'.
+viterbiClonalCN         Function to run the Viterbi algorithm for
+                        'TitanCNA'.
+wigToRangedData         WIG Import Functions. wigToGRanges (new) and
+                        wigToRangedData (deprecated)

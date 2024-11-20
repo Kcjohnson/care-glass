@@ -1,3 +1,9 @@
+#################################
+# Push sequenza seg into db
+# Updated: 2022.03.01
+# Author: Kevin Johnson
+#################################
+
 library(DBI)
 library(odbc)
 library(tidyverse)
@@ -10,8 +16,6 @@ myDir1 <- paste(myDir1, mytag, sep="")
 myinf1 <- sapply(myDir1, function(x)paste(x, dir(x), sep = "/"))
 myinf1 <- unlist(myinf1)
 myinf1 <- myinf1[grep("_segments.txt", myinf1)]
-
-full_table <- do.call(read.delim, myinf1)
 
 tabs <- list()
 for(i in 1:length(myinf1))
@@ -41,19 +45,19 @@ df <- full_table %>%
               log_posterior_proba = LPP)
               
 # Establish connection
-con <- DBI::dbConnect(odbc::odbc(), "GLASSv3")
+con <- DBI::dbConnect(odbc::odbc(), "VerhaakDB4")
 
-old <- dbReadTable(con, Id(schema="variants",table="seqz_seg"))
-old_pairs <- unique(old[,"pair_barcode"])
-
-df_new <- df[-which(df[,"pair_barcode"] %in% old_pairs),]
-
+## If it's needed, restrict to new cohorts.
+# old <- dbReadTable(con, Id(schema="variants",table="seqz_seg"))
+# old_pairs <- unique(old[,"pair_barcode"])
+# df_new <- df[-which(df[,"pair_barcode"] %in% old_pairs),]
 # Limit to new cohorts (GLSS-PD-WXS, GLSS-H2-WXS)
 #df_new <- df_new[grep("GLSS-HF-|GLSS-CU-P",df_new[,"pair_barcode"]),]
-
 # Limit to new cohorts (GLSS-SN-WGS)
-df_new <- df_new[grep("GLSS-SN",df_new[,"pair_barcode"]),]
+# df_new <- df_new[grep("GLSS-SN",df_new[,"pair_barcode"]),]
 
+## Format segmentation file to be uploaded to database.
+df_new <- df
 df_new[,"chrom"] <- as.character(df_new[,"chrom"])
 df_new[which(df_new[,"chrom"]=='X'),"chrom"] <- 23
 df_new[,"chrom"] <- as.numeric(df_new[,"chrom"])
@@ -63,6 +67,7 @@ df_new[,"chrom"] <- as.numeric(df_new[,"chrom"])
 # Upload seq_params
 #-------------------------------------------
 # Bash script to build seqz_params:
+# cd results/sequenza
 # echo -e "pair_barcode\tcellularity\tploidy\tslpp" > seqz_params.txt
 # for i in seqzR/*/*_alternative_solutions.txt
 # do 
@@ -74,16 +79,17 @@ df_new[,"chrom"] <- as.numeric(df_new[,"chrom"])
 # Add parameters to db
 dat <- read.delim("results/sequenza/seqz_params.txt")
 
-old <- dbReadTable(con, Id(schema="variants",table="seqz_params"))
-old_pairs <- unique(old[,"pair_barcode"])
-
-dat_new <- dat[-which(dat[,"pair_barcode"] %in% old_pairs),]
-
+## When needed to add only new samples to the database..
+#old <- dbReadTable(con, Id(schema="variants",table="seqz_params"))
+#old_pairs <- unique(old[,"pair_barcode"])
+#dat_new <- dat[-which(dat[,"pair_barcode"] %in% old_pairs),]
 # Limit to new cohorts (GLSS-PD-WXS, GLSS-H2-WXS)
 #dat_new <- dat_new[grep("GLSS-HF-|GLSS-CU-P",dat_new[,"pair_barcode"]),]
 # Limit to new cohorts (GLSS-SN-WGS)
-dat_new <- dat_new[grep("GLSS-SN-",dat_new[,"pair_barcode"]),]
-
+#dat_new <- dat_new[grep("GLSS-SN-",dat_new[,"pair_barcode"]),]
+dat_new <- dat
 
 # Write new results to db
 dbWriteTable(con, Id(schema="variants",table="seqz_params"), dat_new, append = TRUE)
+
+### END ###

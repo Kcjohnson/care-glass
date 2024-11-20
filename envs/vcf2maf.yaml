@@ -5,8 +5,8 @@ channels:
   - defaults
   - conda-forge
 dependencies:
-  - ensembl-vep
-  - vcf2maf
-  - samtools
-  - bcftools
-  - tabix
+  - ensembl-vep=101.0=pl526hecda079_0
+  - vcf2maf=1.6.18=1
+  - samtools=1.10=h2e538c0_3
+  - bcftools=1.10.2=h4f4756c_3
+  - tabix=0.2.6=ha92aebf_0

@@ -7,8 +7,8 @@ library(DBI)
 
 rm(list=ls())
 
-#Establish connection
-con <- DBI::dbConnect(odbc::odbc(), "GLASSv3")
+# Establish connection
+con <- DBI::dbConnect(odbc::odbc(), "VerhaakDB4")
 
 args = commandArgs(trailingOnly=TRUE)
 

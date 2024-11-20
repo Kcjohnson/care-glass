@@ -9,7 +9,7 @@ library(DBI)
 #######################################################
 
 #Establish connection
-con <- DBI::dbConnect(odbc::odbc(), "GLASSv3")
+con <- DBI::dbConnect(odbc::odbc(), "VerhaakDB4")
 
 args = commandArgs(trailingOnly=TRUE)
 

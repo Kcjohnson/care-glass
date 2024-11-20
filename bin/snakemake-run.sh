@@ -17,7 +17,7 @@
 ## get dir where run_snakemake.sh is present
 ## https://stackoverflow.com/a/246128/1243763
 ## SMKDIR is being referenced in cluster profile under ~/.config/snakemake/
-SMKDIR="/projects/verhaak-lab/GLASS-III"
+SMKDIR="/projects/verhaak-lab/USERS/johnsk/glass4"
 
 cd "${SMKDIR}" && \
 export SMKDIR
@@ -148,7 +148,7 @@ then
 	snakemake --configfile "${CONFIGFILE}" --dag | dot -Tpng > dag.png
 else
 	mkdir -p "${WORKDIR}/logs/slurm"
-	snakemake ${OPTS} --jobs ${NUM_JOBS} -k --use-conda --latency-wait 120 --max-jobs-per-second 2 --config workdir="${WORKDIR}" cluster_json="${CLUSTRCONF}" from_source="${FROMSOURCE}" cohort="${COHORT}" --restart-times 0 --cluster-config "${CLUSTRCONF}" --configfile "${CONFIGFILE}" --jobname "{jobid}.{cluster.job-name}" --profile glass $EXTRA_OPTS $TARGET
+	snakemake ${OPTS} --jobs ${NUM_JOBS} -k --use-conda --latency-wait 120 --max-jobs-per-second 2 --config workdir="${WORKDIR}" cluster_json="${CLUSTRCONF}" from_source="${FROMSOURCE}" cohort="${COHORT}" --restart-times 0 --cluster-config "${CLUSTRCONF}" --configfile "${CONFIGFILE}" --jobname "{jobid}.{cluster.job-name}" --profile sumner $EXTRA_OPTS $TARGET
 	#snakemake ${OPTS} --jobs ${NUM_JOBS} -k --use-conda --latency-wait 120 --max-jobs-per-second 2 --config workdir="${WORKDIR}" cluster_json="${CLUSTRCONF}" from_source="${FROMSOURCE}" cohort="${COHORT}" --restart-times 0 --cluster-config "${CLUSTRCONF}" --configfile "${CONFIGFILE}" --job-name "{jobid}.{cluster.name}" --profile glass -S /bin/bash --mail-user "{cluster.mail-user}" --mail-type "{cluster.mail-type}" --qos "{cluster.qos}" --nodes "{cluster.nodes}" --cpus-per-task "{cluster.cpus-per-task}" --time "{cluster.time}" --mem "{cluster.mem}" --error "${WORKDIR}/{cluster.error}" --output "${WORKDIR}/{cluster.output}" $EXTRA_OPTS $TARGET
 fi
 

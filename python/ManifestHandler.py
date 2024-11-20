@@ -386,4 +386,43 @@ class ManifestHandler:
         """
         return [lp["library_prep"] for lp in self.rna_library_prep if lp["aliquot_barcode"] == aliquot_barcode and lp["readgroup_idtag"] == readgroup_idtag]
 
+    def getSelectedAliquotsCare(self, aliquot_batch = 'CARE-MD-WXS'):
+        """
+        Return a list of selected aliquots of a given CARE project batch, default is CARE-MD-WXS
+        """
+        selected_aliquots_by_batch = [aliquot_barcode for (aliquot_barcode, al) in self.aliquots.items() if al["aliquot_batch"] == aliquot_batch]
+        return list(set(selected_aliquots_by_batch).intersection(self.selected_aliquots))
+
+    def getSelectedCasesCare(self):
+        """
+        Return a list of selected cases for the aliquots specified in a CARE project batch
+        """
+        return list(set([s[0:12] for s in self.getSelectedAliquotsCare()]))  
+
+    def getSelectedAliquotsTonly(self):
+        """
+        Return a list of selected aliquots for tumor-only sample barcodes
+        """
+        selected_aliquots_tonly = [aliquot_barcode for (aliquot_barcode, al) in self.aliquots.items() if al["sample_barcode"] in ["CARE-TK-TK06-TP","CARE-TK-TK06-R1","CARE-MD-MD08-TP","CARE-MD-MD08-R1","CARE-MD-MD10-R1","CARE-MD-MD10-R2","CARE-PS-FR09-TP","CARE-PS-FR09-R1","CARE-PS-FR10-TP","CARE-PS-FR10-R1","CARE-PS-FR11-TP","CARE-PS-FR11-R1","CARE-PS-FR12-TP","CARE-PS-FR12-R1","CARE-PS-FR13-R1","CARE-PS-FR13-R2","CARE-PS-FR14-TP","CARE-PS-FR14-R1","CARE-PS-FR16-TP","CARE-PS-FR16-R1"]]
+        return list(set(selected_aliquots_tonly).intersection(self.selected_aliquots))     
+
+    def getSelectedCasesTonly(self):
+        """
+        Return a list of selected cases for the tumor-only aliquots
+        """
+        return list(set([s[0:12] for s in self.getSelectedAliquotsTonly()]))
+
+    def getSelectedAliquotsLx(self, aliquot_batch = 'GLSS-LX-WGS'):
+        """
+        Return a list of selected aliquots of the GLSS-LX-WGS project batch that have matched normals, default is GLSS-LX-WGS
+        """
+        selected_aliquots_lx_matched = [aliquot_barcode for (aliquot_barcode, al) in self.aliquots.items() if al["sample_barcode"] in ["GLSS-LX-0357-R1", "GLSS-LX-0357-R3", "GLSS-LX-0357-R2", "GLSS-LX-0572-TP", "GLSS-LX-0561-R1", "GLSS-LX-0561-TP", "GLSS-LX-0228-R2","GLSS-LX-0228-R1", "GLSS-LX-0300-R1", "GLSS-LX-0300-TP", "GLSS-LX-0669-R1", "GLSS-LX-0669-TP", "GLSS-LX-0887-R1", "GLSS-LX-0887-TP","GLSS-LX-0418-R1", "GLSS-LX-0418-TP", "GLSS-LX-0626-R1", "GLSS-LX-0626-TP", "GLSS-LX-0308-R1", "GLSS-LX-0308-TP", "GLSS-LX-0677-R2", "GLSS-LX-0677-TP", "GLSS-LX-0727-R1", "GLSS-LX-0727-TP", "GLSS-LX-0833-R1", "GLSS-LX-0833-TP", "GLSS-LX-0723-R1", "GLSS-LX-0723-TP", "GLSS-LX-0638-R1", "GLSS-LX-0638-TP", "GLSS-LX-0959-R1", "GLSS-LX-0959-TP", "GLSS-LX-0452-R1", "GLSS-LX-0452-TP", "GLSS-LX-0409-R1", "GLSS-LX-0409-TP", "GLSS-LX-0836-R1", "GLSS-LX-0836-TP", "GLSS-LX-0694-R1", "GLSS-LX-0694-TP", "GLSS-LX-0711-R1", "GLSS-LX-0711-TP"]]
+        return list(set(selected_aliquots_lx_matched).intersection(self.selected_aliquots))     
+
+    def getSelectedCasesLx(self):
+        """
+        Return a list of selected cases for the aliquots specified in the GLSS-LX-WGS project batch with matched normal
+        """
+        return list(set([s[0:12] for s in self.getSelectedAliquotsLx()]))        
+        
 ## END ##

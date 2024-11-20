@@ -53,9 +53,9 @@ rule titan:
     shell:
     	"""
     	set +u
-        source {config[conda_dir]}/activate r_3.4.1
+        source /home/johnsk/anaconda3/bin/activate titancna_env
         set -u
-    	Rscript /projects/verhaak-lab/USERS/barthf/opt/TitanCNA/scripts/R_scripts/titanCNA.R \
+    	Rscript /projects/verhaak-lab/USERS/johnsk/glass4/R/titancna/TitanCNA/scripts/R_scripts/titanCNA.R \
 			--genomeBuild hg19 \
 			--id {wildcards.pair_barcode} \
 			--hetFile {input.hets} \
@@ -71,7 +71,7 @@ rule titan:
 			--gender {params.gender} \
 			--estimatePloidy TRUE \
 			--outDir {params.outdir} \
-			--libdir /projects/verhaak-lab/USERS/barthf/opt/TitanCNA 
+			--libdir /projects/verhaak-lab/USERS/johnsk/glass4/R/titancna/TitanCNA 
 			> {log} 2>&1
     	"""
 
@@ -95,9 +95,9 @@ rule selecttitan:
     shell:
     	"""
     	set +u
-        source {config[conda_dir]}/activate r_3.4.1
+        source /home/johnsk/anaconda3/bin/activate titancna_env
         set -u
-    	Rscript /projects/verhaak-lab/USERS/barthf/opt/TitanCNA/scripts/R_scripts/selectSolution.R \
+    	Rscript /projects/verhaak-lab/USERS/johnsk/glass4/R/titancna/TitanCNA/scripts/R_scripts/selectSolution.R \
 			--ploidyRun2=results/cnv/titan/{wildcards.pair_barcode}/ploidy2 \
 			--ploidyRun3=results/cnv/titan/{wildcards.pair_barcode}/ploidy3 \
 			--threshold=0.15 \
@@ -105,14 +105,13 @@ rule selecttitan:
 			> {log} 2>&1
     	"""
 
-
+# 2023.03.19 UPDATE: There was an error in imagemagick montage script so I removed it just to get the final optimal solution result.
 rule finaltitan:
     input:
         txt     = "results/cnv/titan/{pair_barcode}/{pair_barcode}.optimalClusters.txt"
     output:
         segs    = "results/cnv/titanfinal/seg/{pair_barcode}.seg.txt",
         params  = "results/cnv/titanfinal/params/{pair_barcode}.params.txt",
-        pdf     = "results/cnv/titanfinal/pdf/{pair_barcode}.pdf",
         igv		= "results/cnv/titanfinal/igv/{pair_barcode}.igv.seg"
     threads:
         CLUSTER_META["finaltitan"]["cpus-per-task"]
@@ -129,8 +128,33 @@ rule finaltitan:
 		cp "${{TITANDIR}}.segs.txt" {output.segs}
 		cp "${{TITANDIR}}.seg" {output.igv}
 		cp "${{TITANDIR}}.params.txt" {output.params}
-        module load singularity
-        singularity exec docker://dpokidov/imagemagick montage $TITANDIR/*_CNA.pdf $TITANDIR/*_LOH.pdf $TITANDIR/*_CF.pdf -tile 1x3 -geometry +0+0 {output.pdf}
     	"""
+
+#rule finaltitan:
+#    input:
+#        txt     = "results/cnv/titan/{pair_barcode}/{pair_barcode}.optimalClusters.txt"
+#    output:
+#        segs    = "results/cnv/titanfinal/seg/{pair_barcode}.seg.txt",
+#        params  = "results/cnv/titanfinal/params/{pair_barcode}.params.txt",
+#        pdf     = "results/cnv/titanfinal/pdf/{pair_barcode}.pdf",
+#        igv     = "results/cnv/titanfinal/igv/{pair_barcode}.igv.seg"
+#    threads:
+#        CLUSTER_META["finaltitan"]["cpus-per-task"]
+#    log:
+#        "logs/cnv/finaltitan/{pair_barcode}.log"
+#    benchmark:
+#        "benchmarks/cnv/finaltitan/{pair_barcode}.txt"
+#    message:
+#        "Copy selected (final) TitanCNA results\n"
+#        "Pair ID: {wildcards.pair_barcode}"
+#    shell:
+#        """
+#        TITANDIR=$(cat {input} | awk -F'\\t' '{{print $11}}' | sed -n 2p)
+#        cp "${{TITANDIR}}.segs.txt" {output.segs}
+#        cp "${{TITANDIR}}.seg" {output.igv}
+#        cp "${{TITANDIR}}.params.txt" {output.params}
+#        module load singularity
+#        singularity exec docker://dpokidov/imagemagick montage $TITANDIR/*_CNA.pdf $TITANDIR/*_LOH.pdf $TITANDIR/*_CF.pdf -tile 1x3 -geometry +0+0 {output.pdf}
+#        """
 
 ## END ##

@@ -4,7 +4,7 @@ library(DBI)
 #.libPaths("/home/barthf/R/x86_64-pc-linux-gnu-library/3.3")
 #dyn.load("/projects/verhaak-lab/verhaak_env/anaconda/v4.2.0/envs/rvenv2018/lib/libodbc.so")
 ## database connection
-con <- DBI::dbConnect(odbc::odbc(), "GLASSv3")
+con <- DBI::dbConnect(odbc::odbc(), "VerhaakDB4")
 
 ## input/output parameters
 barcode   <- snakemake@wildcards[["aliquot_barcode"]]

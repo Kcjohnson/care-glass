@@ -115,7 +115,7 @@ rule fingerprintall:
         lambda wildcards: expand("results/align/bqsr/{aliquot_barcode}.realn.mdup.bqsr.bam", aliquot_barcode = manifest.getSelectedAliquots())
     output:
         #"results/fingerprinting/GLASS.crosscheck_metrics"
-        "results/fingerprinting/GLASS_SN.crosscheck_metrics"
+        "results/fingerprinting/GLSS-LX-batch2.crosscheck_metrics"
     params:
         mem = CLUSTER_META["fingerprintall"]["mem"],
         samples = lambda _, input: " ".join(["--INPUT " + s for s in input])

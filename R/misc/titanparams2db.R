@@ -1,14 +1,27 @@
-### push titan params to db
+#####################################
+## Write TITAN parameters to database
+## Author: Kevin Johnson
+## Updated: 2022.02.25
+#####################################
+
 
 library(tidyverse)
 library(DBI)
 library(odbc)
-con <- DBI::dbConnect(odbc::odbc(), "GLASSv3")
 
+## Current project.
+projdir <- "/projects/verhaak-lab/USERS/johnsk/glass4"
+setwd(projdir)
+
+## Connect to the correct* internal database.
+con <- DBI::dbConnect(odbc::odbc(), "VerhaakDB4")
+pairs = dbReadTable(con,  Id(schema="analysis",table="pairs"))
+
+## The parameter files contain information about purity and ploidy.
 paramfiles <- list.files('results/cnv/titanfinal/params', full.names = TRUE)
 paramfiles <- paramfiles[grep(".params.txt",paramfiles)]
 
-## taken from Gavin's script
+## Taken from Gavin Ha's (TitanCNA creator) script
 formatParams <- function(params){
   id <- colnames(params)
   barcode <- strsplit(id, "_cluster")[[1]][1]
@@ -34,13 +47,18 @@ datlist = lapply(paramfiles, function(f) {
 
 dat = data.table::rbindlist(datlist) %>% 
   as.data.frame() %>%
-  select(pair_barcode = barcode,
+  dplyr::select(pair_barcode = barcode,
          num_clones = numClust,
          cellular_prevalence = cellPrev,
          purity,
          normal_contamination = norm,
          ploidy,
          loglik,
-         sdbw)
+         sdbw) %>% 
+  inner_join(pairs, by="pair_barcode") %>% 
+  dplyr::select(pair_barcode:sdbw, aliquot_barcode = tumor_barcode)
 
 dbWriteTable(con, Id(schema="variants",table="titan_params"), dat, append = TRUE)
+
+
+### END ###

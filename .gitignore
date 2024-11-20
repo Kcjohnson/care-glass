@@ -24,3 +24,4 @@ R/add_genomes/slurm_out/**
 *.pyc
 *.pyo
 figures/**
+ref/**

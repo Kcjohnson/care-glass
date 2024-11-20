@@ -1,6 +1,6 @@
 ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## 
 ## Snakefile for GLASS pipeline
-## Authors: Floris Barthel, Samir Amin, Frederick Varn
+## Authors: Floris Barthel, Samir Amin, Frederick Varn, Kevin Johnson
 ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## 
 
 import os
@@ -13,7 +13,6 @@ from python.PostgreSQLManifestHandler import PostgreSQLManifestHandler
 from python.JSONManifestHandler import JSONManifestHandler
 
 ## Connect to database
-## dbconf = dbconfig("/home/barthf/.odbc.ini", "VerhaakDB")
 dbconf = dbconfig(config["db"]["configfile"], config["db"]["configsection"])
 
 #print("Cohort set to ", str(config["cohort"]))
@@ -53,6 +52,7 @@ WGS_SCATTERLIST = ["temp_{num}_of_50".format(num=str(j+1).zfill(4)) for j in ran
 #include: "snakemake/telseq.smk"
 #include: "snakemake/mutect2.smk"
 #include: "snakemake/mutect2-post.smk"
+#include: "snakemake/mutect2-post-lx.smk"
 #include: "snakemake/varscan2.smk"
 #include: "snakemake/cnvnator.smk"
 #include: "snakemake/lumpy.smk"
@@ -61,11 +61,13 @@ WGS_SCATTERLIST = ["temp_{num}_of_50".format(num=str(j+1).zfill(4)) for j in ran
 #include: "snakemake/cnv.smk"
 #include: "snakemake/sequenza.smk"
 #include: "snakemake/optitype.smk"
-include: "snakemake/pvacseq.smk"
+#include: "snakemake/pvacseq.smk"
 #include: "snakemake/lohhla.smk"
 #include: "snakemake/cnv-post.smk"		(Deprecated)
 #include: "snakemake/titan.smk"
-#include: "snakemake/pyclone.smk"
+include: "snakemake/pyclone.smk"
+#include: "snakemake/mutect2-tonly.smk"
+#include: "snakemake/mutect2-tonly-post.smk"
 
 #RNA modules
 #include: "snakemake/kallisto.smk"
@@ -121,9 +123,17 @@ rule align:
           for aliquot_barcode, readgroups in manifest.getSelectedReadgroupsByAliquot().items()
           for readgroup in readgroups]
 
+# For tumor w/ matched normal analyses
 rule gencode:
     input:
-        expand("results/align/gencode-coverage/{aliquot_barcode}.gencode-coverage.tsv", aliquot_barcode = manifest.getAliquotsByBatch('GLSS-SN-WGS'))
+        expand("results/align/gencode-coverage/{aliquot_barcode}.gencode-coverage.tsv", aliquot_barcode = manifest.getAliquotsByBatch('GLSS-LX-WGS'))
+
+# For tumor-only analyses
+#rule gencode:
+#    input:
+#        expand("results/align/gencode-coverage/{aliquot_barcode}.gencode-coverage.tsv", aliquot_barcode = manifest.getSelectedAliquotsTonly())
+
+
 
 
 ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## 
@@ -161,6 +171,14 @@ rule m2db:
         "results/mutect2/consensusvcf/consensus.normalized.sorted.vep.maf",
         expand("results/mutect2/geno2db/{case_barcode}.info.tsv", case_barcode = manifest.getSelectedCases()),
         expand("results/mutect2/geno2db/{case_barcode}.geno.tsv", case_barcode = manifest.getSelectedCases())
+
+# Needed to modify the m2db from above in order to remove tumor-only cases.
+rule m2db_lx:
+    input:
+        "results/mutect2/consensusvcf/consensus.normalized.sorted.funcotated.tsv",
+        "results/mutect2/consensusvcf/consensus.normalized.sorted.vep.maf",
+        expand("results/mutect2/geno2db/{case_barcode}.info.tsv", case_barcode = manifest.getSelectedCasesLx()),
+        expand("results/mutect2/geno2db/{case_barcode}.geno.tsv", case_barcode = manifest.getSelectedCasesLx())
 
 rule sequenza:
     input:
@@ -266,8 +284,8 @@ rule telseq:
 
 rule pyclone:
     input:
-        #lambda wildcards: expand("results/pyclone/run/{pyclone_short_name}/plots/loci/{plot_type}.pdf", pyclone_short_name = manifest.getPyCloneCases(), plot_type = ['density','parallel_coordinates','scatter','similarity_matrix','vaf_parallel_coordinates','vaf_scatter']),
-        #lambda wildcards: expand("results/pyclone/run/{pyclone_short_name}/plots/clusters/{plot_type}.pdf", pyclone_short_name = manifest.getPyCloneCases(), plot_type = ['density','parallel_coordinates','scatter']),
+        lambda wildcards: expand("results/pyclone/run/{pyclone_short_name}/plots/loci/{plot_type}.pdf", pyclone_short_name = manifest.getPyCloneCases(), plot_type = ['density','parallel_coordinates','scatter','similarity_matrix','vaf_parallel_coordinates','vaf_scatter']),
+        lambda wildcards: expand("results/pyclone/run/{pyclone_short_name}/plots/clusters/{plot_type}.pdf", pyclone_short_name = manifest.getPyCloneCases(), plot_type = ['density','parallel_coordinates','scatter']),
         lambda wildcards: expand("results/pyclone/run/{pyclone_short_name}/tables/{table_type}.tsv", pyclone_short_name = manifest.getPyCloneCases(), table_type = ['cluster','loci'])
 
 ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## 
@@ -279,7 +297,7 @@ rule fingerprint:
    input:
        expand("results/fingerprinting/sample/{aliquot_barcode}.crosscheck_metrics", aliquot_barcode = manifest.getSelectedAliquots()),
        expand("results/fingerprinting/case/{case_barcode}.crosscheck_metrics", case_barcode = manifest.getSelectedCases()),
-       "results/fingerprinting/GLASS_SN.crosscheck_metrics"
+       "results/fingerprinting/GLSS-LX-batch2.crosscheck_metrics"
 
 # Fingerprint DNA and RNA samples together
 rule full_fingerprint:
@@ -290,7 +308,7 @@ rule full_fingerprint:
        expand("results/rnafingerprint/sample/{aliquot_barcode}.crosscheck_metrics", aliquot_barcode = manifest.getSelectedAliquots(analyte='R')),
        expand("results/rnafingerprint/case/{case_barcode}.crosscheck_metrics", case_barcode = manifest.getSelectedCases()),
        expand("results/rnafingerprint/gencode-coverage/{aliquot_barcode}.gencode-coverage.tsv", aliquot_barcode = manifest.getSelectedAliquots(analyte='R'))
-
+#
 #         expand("results/rnafingerprint/bqsr/{aliquot_barcode}.realn.mdup.bqsr.bam", aliquot_barcode = manifest.getSelectedAliquots(analyte = 'R')),
 #         expand("results/rnafingerprint/validatebam/{aliquot_barcode}.ValidateSamFile.txt", aliquot_barcode = manifest.getSelectedAliquots(analyte = 'R')),
 #         lambda wildcards: ["results/rnafingerprint/fastqc/{sample}/{sample}.{rg}.unaligned_fastqc.html".format(sample = aliquot_barcode, rg = readgroup)
@@ -306,7 +324,7 @@ rule quant_tpm:
        "results/kallisto/kallisto/final/transcript_tpms_all_samples.tsv",
        "results/kallisto/kallisto/final/transcript_tpm_matrix_all_samples.tsv",
        "results/kallisto/kallisto/final/gene_tpm_matrix_all_samples.tsv",
-       "results/kallisto/kallisto/final/p_result_gene_tpm_matrix_all_samples.gct.txt",
+#       "results/kallisto/kallisto/final/p_result_gene_tpm_matrix_all_samples.gct.txt",
        "results/kallisto/pizzly/final/fusions_all_samples.tsv"
 
 rule quant_nctpm:
@@ -334,5 +352,63 @@ rule mixcr:
         "results/mixcr/final/merged_clones_tcr.txt",
         "results/mixcr/final/merged_clones_bcr.txt"
                 
-          
+
+## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## 
+## Mutect2 tumor-only 
+## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## 
+
+rule mutect2_tonly:
+    input:
+        expand("results/mutect2/tonly/m2filter/{case_barcode}.filtered.vcf.gz", case_barcode = manifest.getSelectedCases()),
+        expand("results/mutect2/tonly/ssm2filter/{aliquot_barcode}.filtered.vcf.gz", aliquot_barcode = manifest.getSelectedAliquots())
+
+rule ssmutect2_tonly:
+    input:
+        expand("results/mutect2/tonly/ssm2filter/{aliquot_barcode}.filtered.vcf.gz", aliquot_barcode = manifest.getSelectedAliquots()) 
+
+# Applying it for CARE-MD-WXS where the cohort `MD` overlaps with GLSS-MD and causes issues.
+#rule mutect2_tonly:
+#    input:
+#        expand("results/mutect2/tonly/ssm2filter/{aliquot_barcode}.filtered.vcf.gz", aliquot_barcode = manifest.getSelectedAliquotsCare(aliquot_batch = 'CARE-MD-WXS')),
+#        expand("results/mutect2/tonly/m2filter/{case_barcode}.filtered.vcf.gz", case_barcode = manifest.getSelectedCasesCare())
+
+#rule ssmutect2_tonly:
+#    input:
+#        expand("results/mutect2/tonly/ssm2filter/{aliquot_barcode}.filtered.vcf.gz", aliquot_barcode = manifest.getSelectedAliquotsCare(aliquot_batch = 'CARE-MD-WXS'))           
+
+
+## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## 
+## Mutect2 tumor-only post-processing
+## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## 
+
+rule m2db_tonly:
+    input:
+        "results/mutect2/tonly/consensusvcf/consensus.normalized.sorted.funcotated.tsv",
+        "results/mutect2/tonly/consensusvcf/consensus.normalized.sorted.vep.maf",
+        expand("results/mutect2/tonly/geno2db/{case_barcode}.info.tsv", case_barcode = manifest.getSelectedCasesTonly()),
+        expand("results/mutect2/tonly/geno2db/{case_barcode}.geno.tsv", case_barcode = manifest.getSelectedCasesTonly())
+
+#rule ssvar_tonly:
+#    input:
+#        expand("results/mutect2/tonly/ssdropgt/{aliquot_barcode}.filtered.normalized.sorted.vcf.gz", aliquot_barcode = manifest.getSelectedAliquotsTonly())           
+
+#rule svar_tonly:
+#    input:
+#        expand("results/mutect2/tonly/dropgt/{case_barcode}.filtered.normalized.sorted.vcf.gz", case_barcode = manifest.getSelectedCasesTonly())
+
+# Hard coding samples to see if it was an issue retrienving in the manifest.getSelectedCasesTonly(), which depends on aliquots function. However, this did not improve the situation. 
+#rule svar_tonly:
+#    input:
+#        "results/mutect2/tonly/dropgt/CARE-TK-TK06.filtered.normalized.sorted.vcf.gz",
+#        "results/mutect2/tonly/dropgt/CARE-MD-MD08.filtered.normalized.sorted.vcf.gz",
+#        "results/mutect2/tonly/dropgt/CARE-MD-MD10.filtered.normalized.sorted.vcf.gz",
+#        "results/mutect2/tonly/dropgt/CARE-PS-FR09.filtered.normalized.sorted.vcf.gz",
+#        "results/mutect2/tonly/dropgt/CARE-PS-FR10.filtered.normalized.sorted.vcf.gz",
+#        "results/mutect2/tonly/dropgt/CARE-PS-FR11.filtered.normalized.sorted.vcf.gz",
+#        "results/mutect2/tonly/dropgt/CARE-PS-FR12.filtered.normalized.sorted.vcf.gz",
+#        "results/mutect2/tonly/dropgt/CARE-PS-FR13.filtered.normalized.sorted.vcf.gz",
+#        "results/mutect2/tonly/dropgt/CARE-PS-FR14.filtered.normalized.sorted.vcf.gz",
+#        "results/mutect2/tonly/dropgt/CARE-PS-FR16.filtered.normalized.sorted.vcf.gz"
+
+
 ## END ##

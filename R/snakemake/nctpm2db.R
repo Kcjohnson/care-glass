@@ -9,7 +9,7 @@ library(DBI)
 #######################################################
 
 #Establish connection
-con <- DBI::dbConnect(odbc::odbc(), "GLASSv3")
+con <- DBI::dbConnect(odbc::odbc(), "VerhaakDB4")
 
 args = commandArgs(trailingOnly=TRUE)
 
@@ -22,5 +22,9 @@ transcript_tpm <- args[1]
 cat("Reading in inputs...")
 ttpm <- read.delim(transcript_tpm,stringsAsFactors=FALSE)
 
-dbWriteTable(con, Id(schema="analysis", table="noncoding_tpm"), ttpm, overwrite=TRUE)
+output <- "/projects/verhaak-lab/USERS/johnsk/glass4/results/kallisto/noncoding/analysis_noncoding_tpm.txt"
+write.table(ttpm,output,sep="\t",quote=FALSE,row.names=FALSE)
 
+#dbWriteTable(con, Id(schema="analysis", table="noncoding_tpm"), ttpm, overwrite=TRUE)
+
+### END ###

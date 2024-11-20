@@ -147,22 +147,22 @@ rule tpm_gct:
 ## Run transcriptional subtype classifier and upload to db:
 ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ##
 
-rule transcript_class:
-    input:
-        "results/kallisto/kallisto/final/gene_tpm_matrix_all_samples.gct"
-    output:
-        protected("results/kallisto/kallisto/final/p_result_gene_tpm_matrix_all_samples.gct.txt")
-    conda:
-        "../envs/transcript_class.yaml"
-    log:
-        "logs/RNAseq/post/transcript_class.log"
-    message:
-        "Running transcriptional subtype classifier and uploading to db"
-    shell:
-    	"""
-		Rscript R/snakemake/transcriptclass2db.R {input} {output}
-		2>{log}
-    	"""			
+#rule transcript_class:
+#    input:
+#        "results/kallisto/kallisto/final/gene_tpm_matrix_all_samples.gct"
+#    output:
+#        protected("results/kallisto/kallisto/final/p_result_gene_tpm_matrix_all_samples.gct.txt")
+#    conda:
+#        "../envs/transcript_class_cleaned.yaml"
+#    log:
+#        "logs/RNAseq/post/transcript_class.log"
+#    message:
+#        "Running transcriptional subtype classifier and uploading to db"
+#    shell:
+#    	"""
+#		Rscript R/snakemake/transcriptclass2db.R {input} {output}
+#		2>{log}
+#   	"""			
     	
 ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## 
 ## Run pizzly to call transcript fusions:

@@ -6,13 +6,13 @@ from_source: 0
 
 ## Database settings
 db:
-  configfile: "/projects/verhaak-lab/GLASS-III/.odbc.ini"
-  configsection: "GLASSv3"
+  configfile: "/home/johnsk/.odbc.ini"
+  configsection: "VerhaakDB4"
 
 ## Data paths
 data:
-  source_path: "/projects/verhaak-lab/GLASS-III/data"
-  realn_path: "/projects/verhaak-lab/GLASS-III/results/align/bqsr"
+  source_path: "/projects/verhaak-lab/USERS/johnsk/glass4/data"
+  realn_path: "/projects/verhaak-lab/USERS/johnsk/glass4/results/align/bqsr"
 
 ## Full path to cluster settings
 cluster_json:     "conf/cluster.json"
@@ -22,7 +22,7 @@ cluster_json:     "conf/cluster.json"
 
 ## Module and conda directories
 module_dir:        "/projects/verhaak-lab/varnf/software/modules"
-conda_dir:        "/projects/verhaak-lab/varnf/anaconda3/bin"
+conda_dir:        "/home/johnsk/anaconda3/condabin/conda"
 
 gnomad_vcf:       "/projects/verhaak-lab/verhaak_ref/gatk-legacy-bundles/Mutect2/af-only-gnomad.raw.sites.b37.vcf.gz"
 funcotator_dir:   "/projects/verhaak-lab/verhaak_ref/funcotator/funcotator_dataSources.v1.6.20190124s"
@@ -92,7 +92,7 @@ html_dir:         "/home/barthf/ShinyApps/"
 gdc_token:        "/home/barthf/gdc-user-token.2018-05-23T11_13_25-04_00.txt"
 
 ## Temporary directory
-tempdir:          "/fastscratch/verhaak-lab/temp"
+tempdir:          "/fastscratch/johnsk/temp"
 
 ## SV mask
 svmask_lumpy:     "/projects/verhaak-lab/USERS/barthf/GLASS-WG/data/ref/human_g1k_v37_decoy_svmask_lumpy.bed"
