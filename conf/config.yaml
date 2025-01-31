@@ -1,5 +1,5 @@
 ## Snakemake configuration v 5.17
-## @Author Frederick Varn and Floris Barthel
+## @Author Floris Barthel and Frederick Varn
 
 ## Boolean indicating whether the starting point should be raw source files (eg. source BAM or FASTQ to be aligned) or aligned data (eg. realigned BAM files)
 from_source: 0
@@ -159,10 +159,6 @@ prada_gtf:      "/projects/verhaak-lab/USERS/varnf/SofWar/pyPRADA_1.2/ref/PRADA-
 
 seconds_between_progress_updates: 900
 
-## CIBERSORTx parameters
-cibersortx_dir: "/projects/verhaak-lab/varnf/docker/CIBERSORTx"
-csx_username:   "Frederick.S.Varn.Jr.GR@dartmouth.edu"
-csx_token:      "ef745da3ebf38e86c4b115ea37df2362"    
          
 ## Path to MiXCR
 mixcr:  "/projects/verhaak-lab/USERS/varnf/SofWar/anaconda3/envs/mixcr/bin/mixcr"
