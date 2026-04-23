@@ -4,7 +4,12 @@
 The Cellular Analysis of Resistance and Evolution (CARE) and Glioma Longitudinal AnalySiS (GLASS) consortiums both use bulk sequencing to study glioma evolution. The code in this respository was used to perform the pre-processing of whole exome and whole genome sequencing analyses described in both the CARE and GLASS consortium datasets (i.e., same pipelines were used for both datasets). The larger CARE/GLASS dataset is managed internally by the Verhaak Lab using the PostgreSQL database management system. These data are under active curation so future versions will include additional data as well as correct potential errors.
 
 ### Data download
+CARE IDH-wildtype:
 The CARE IDH-wildtype data can be downloaded from the `Tables` page [here](https://www.synapse.org/Synapse:syn26464346/tables/) and the `Files` page [here](https://www.synapse.org/Synapse:syn26464346/files/). It is also possible to query the data directly using the the API by using queries. You can read more about that [here](https://docs.synapse.org/articles/tables.html).
+
+CARE IDH-mutant:
+Processed CARE IDH-mutant glioma data can be accessed via [Synapse](https://www.synapse.org/Synapse:syn63600501/wiki/629765). Raw data can be accessed via EGAS50000001727, DUOS-000475, and DUOS-000477.
+
 
 ### Prior datasets
 
